@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Premium Billing – Team Room Arrangement</title>
+<style>
+  :root {
+    --wall: #e8e2d3;
+    --floor: #f7f3ea;
+    --table: #b98a55;
+    --table-edge: #8c6336;
+    --ink: #2d2a26;
+    --muted: #7a7266;
+    --accent: #116dff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #f1ece0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+  }
+  .page {
+    max-width: 1700px;
+    margin: 32px auto;
+    padding: 24px;
+  }
+  .rooms {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .room-title {
+    text-align: center;
+    margin: 0 0 10px;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  h1 { font-size: 22px; margin: 0; letter-spacing: 0.2px; }
+  .subtitle { color: var(--muted); font-size: 13px; }
+  .room {
+    position: relative;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        var(--floor) 0 60px,
+        #efe8d7 60px 61px
+      );
+    border: 8px solid var(--wall);
+    border-radius: 14px;
+    padding: 28px 24px 56px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08), inset 0 0 60px rgba(0,0,0,0.04);
+  }
+  .door {
+    position: absolute;
+    top: -8px;
+    right: 48px;
+    width: 80px;
+    height: 10px;
+    background: #f1ece0;
+    border-left: 2px solid var(--wall);
+    border-right: 2px solid var(--wall);
+  }
+  .door::after {
+    content: "door";
+    position: absolute;
+    top: -18px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px; color: var(--muted); letter-spacing: 1px;
+  }
+  .window {
+    position: absolute;
+    bottom: -8px;
+    width: 120px; height: 10px;
+    background: #cfe7ff;
+    border-left: 2px solid var(--wall);
+    border-right: 2px solid var(--wall);
+  }
+  .window.w1 { left: 80px; }
+  .window.w2 { left: 50%; transform: translateX(-50%); }
+  .window.w3 { right: 80px; }
+
+  .row {
+    display: grid;
+    gap: 22px;
+    margin: 18px 0 26px;
+    justify-content: center;
+  }
+  .row.r-4 { grid-template-columns: repeat(4, 180px); }
+  .row.r-3 { grid-template-columns: repeat(3, 180px); }
+  .row.r-2 { grid-template-columns: repeat(2, 180px); }
+  .row.align-right { justify-content: end; }
+
+  .door.bottom-left {
+    top: auto; right: auto;
+    bottom: -8px; left: 48px;
+  }
+  .door.bottom-left::after {
+    top: auto; bottom: -18px;
+  }
+  .door.top-left {
+    right: auto;
+    left: 48px;
+  }
+
+  .window.right-wall {
+    bottom: auto; left: auto;
+    right: -8px;
+    width: 10px; height: 120px;
+    border-left: none;
+    border-right: none;
+    border-top: 2px solid var(--wall);
+    border-bottom: 2px solid var(--wall);
+    transform: none;
+  }
+  .window.right-wall.r1 { top: 48px; }
+  .window.right-wall.r2 { top: 50%; transform: translateY(-50%); }
+  .window.right-wall.r3 { bottom: 48px; }
+
+  .row-with-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin: 18px 0 26px;
+  }
+  .row-with-column .row { margin: 0; }
+
+  .column {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, #d9d4cb 0%, #a8a29a 55%, #7a7468 100%);
+    box-shadow:
+      inset 0 -4px 8px rgba(0,0,0,0.25),
+      inset 0 4px 6px rgba(255,255,255,0.35),
+      0 6px 14px rgba(0,0,0,0.2);
+    border: 2px solid #6b655a;
+    flex-shrink: 0;
+  }
+  .column::after {
+    content: "column";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  .right-wall-window {
+    position: absolute;
+    top: 48px;
+    bottom: 48px;
+    right: -8px;
+    width: 10px;
+    background: #cfe7ff;
+    border-top: 2px solid var(--wall);
+    border-bottom: 2px solid var(--wall);
+  }
+  .right-wall-window::before {
+    content: "window";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    transform-origin: center;
+    font-size: 11px;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .row-label {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: -6px;
+  }
+
+  .table {
+    position: relative;
+    height: 130px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, var(--table) 0%, #a8784a 100%);
+    box-shadow:
+      0 4px 0 var(--table-edge),
+      0 10px 18px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+  .table::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border-radius: 10px;
+    border: 1px dashed rgba(255,255,255,0.25);
+    pointer-events: none;
+  }
+  .table.empty::after {
+    content: "empty";
+    position: absolute;
+    bottom: 8px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+  }
+  .seat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: grab;
+    user-select: none;
+    transition: transform 120ms ease;
+  }
+  .seat:active { cursor: grabbing; }
+  .seat.dragging { opacity: 0.35; transform: scale(0.95); }
+  .table.drop-target {
+    outline: 3px dashed #116dff;
+    outline-offset: 4px;
+    transform: translateY(-2px);
+  }
+  .table { transition: transform 120ms ease, outline-offset 120ms ease; }
+  .seat img {
+    width: 78px; height: 78px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    background: #ddd;
+  }
+  .seat .name {
+    background: #fff;
+    color: var(--ink);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    white-space: nowrap;
+  }
+  footer {
+    margin-top: 18px;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .legend {
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px; background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    font-size: 12px;
+  }
+  .chip .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>Team Room Arrangement</h1>
+        <div class="subtitle">3 rooms · 37 tables · 18 teammates (+2 future) · random seating</div>
+      </div>
+      <div class="legend">
+        <span class="chip"><span class="dot"></span>Premium Billing</span>
+        <span class="chip">Drag any face onto another table to swap</span>
+        <button id="reshuffle" class="chip" style="border:0; cursor:pointer;">↻ Reshuffle</button>
+      </div>
+    </header>
+
+    <div class="rooms">
+    <div>
+    <div class="room-title">PPP room</div>
+    <div class="room">
+      <div class="door top-left"></div>
+      <div class="window right-wall r1"></div>
+      <div class="window right-wall r2"></div>
+      <div class="window right-wall r3"></div>
+
+      <div class="row-label">Row 1 — 3 tables</div>
+      <div class="row r-3">
+        <div class="table empty"></div>
+        <div class="table empty"></div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Eden Lev" src="https://avatars.slack-edge.com/2025-05-14/8896431288946_6994ce51666a13c91c2c_512.jpg" />
+            <span class="name">Eden Lev</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-label">Row 2 — 2 tables (+ concrete column)</div>
+      <div class="row-with-column">
+        <div class="row r-2">
+          <div class="table empty"></div>
+          <div class="table">
+            <div class="seat" draggable="true">
+              <img alt="Stas Slutsker" src="https://avatars.slack-edge.com/2024-09-08/7695460313683_004f0cb70289d9721288_512.png" />
+              <span class="name">Stas Slutsker</span>
+            </div>
+          </div>
+        </div>
+        <div class="column" aria-label="concrete column"></div>
+      </div>
+
+      <div class="row-label">Row 3 — 3 tables</div>
+      <div class="row r-3">
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Omer Kampf" src="https://avatars.slack-edge.com/2020-05-30/1155304326067_c9a1501507f6d1ab2a7b_512.jpg" />
+            <span class="name">Omer Kampf</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Idan Rachmanov" src="https://avatars.slack-edge.com/2017-10-02/250944807303_e3b3e2a8cd0ed5e53ae3_512.jpg" />
+            <span class="name">Idan Rachmanov</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Lidor Zohar Avitan" src="https://avatars.slack-edge.com/2022-01-21/2998775609153_72cd04c905e8b2cc2322_512.png" />
+            <span class="name">Lidor Zohar Avitan</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-label">Row 4 — 3 tables</div>
+      <div class="row r-3">
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Dor Bracha" src="https://avatars.slack-edge.com/2023-05-03/5201595839893_2113117eee382b3ccaca_512.png" />
+            <span class="name">Dor Bracha</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Shay Tal-Gerby" src="https://avatars.slack-edge.com/2025-04-28/8819549481028_f2464e6ac130e46e431e_512.jpg" />
+            <span class="name">Shay Tal-Gerby</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Omri Magen" src="https://avatars.slack-edge.com/2023-07-26/5640926470835_b22e4843b472eb34e2d0_512.jpg" />
+            <span class="name">Omri Magen</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div>
+    <div class="room-title">Billing team</div>
+    <div class="room">
+      <div class="door bottom-left"></div>
+      <div class="right-wall-window"></div>
+
+      <div class="row-label">Row 1 — 4 tables</div>
+      <div class="row r-4">
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Ron Buchnic" src="https://avatars.slack-edge.com/2023-02-07/4763492679700_19e89580372c2967cc97_512.jpg" />
+            <span class="name">Ron Buchnic</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Shir Barnes" src="https://avatars.slack-edge.com/2022-10-20/4247108522261_82735406c336f89cf8f4_512.jpg" />
+            <span class="name">Shir Barnes</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Sivan Waxman" src="https://avatars.slack-edge.com/2021-07-29/2310811282871_32f90cb93e5f330098cc_512.jpg" />
+            <span class="name">Sivan Waxman</span>
+          </div>
+        </div>
+        <div class="table empty"></div>
+      </div>
+
+      <div class="row-label">Row 2 — 3 tables (right-aligned)</div>
+      <div class="row r-3 align-right">
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Future Employee" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23dfd8c7' width='100' height='100'/><text x='50' y='72' font-size='70' text-anchor='middle' fill='%237a7266' font-family='sans-serif' font-weight='bold'>?</text></svg>" />
+            <span class="name">Future Employee</span>
+          </div>
+        </div>
+        <div class="table empty"></div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Karin Wasenstein" src="https://avatars.slack-edge.com/2025-02-19/8499111339296_778cf21b49c14fe79cb4_512.jpg" />
+            <span class="name">Karin Wasenstein</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-label">Row 3 — 3 tables (right-aligned)</div>
+      <div class="row r-3 align-right">
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Maya Shani" src="https://avatars.slack-edge.com/2023-04-18/5149210467888_df4da31acebafa1d30e3_512.png" />
+            <span class="name">Maya Shani</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Hadar Dotan" src="https://avatars.slack-edge.com/2024-07-30/7522151996368_db18b03407548ad1dcb4_512.jpg" />
+            <span class="name">Hadar Dotan</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Roi Ashkenazi" src="https://avatars.slack-edge.com/2024-04-07/6946399541792_669f69c83540d5905886_512.jpg" />
+            <span class="name">Roi Ashkenazi</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-label">Row 4 — 4 tables</div>
+      <div class="row r-4">
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Bar Kohavi" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23dfd8c7' width='100' height='100'/><text x='50' y='72' font-size='70' text-anchor='middle' fill='%237a7266' font-family='sans-serif' font-weight='bold'>?</text></svg>" />
+            <span class="name">Bar Kohavi</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Nir Sher" src="https://avatars.slack-edge.com/2025-02-19/8464130495095_b333954d553e981c2ee4_512.jpg" />
+            <span class="name">Nir Sher</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Avgar Marciano" src="https://avatars.slack-edge.com/2018-02-13/314444570277_48363e43cde60a70d534_512.jpg" />
+            <span class="name">Avgar Marciano</span>
+          </div>
+        </div>
+        <div class="table">
+          <div class="seat" draggable="true">
+            <img alt="Future Employee" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23dfd8c7' width='100' height='100'/><text x='50' y='72' font-size='70' text-anchor='middle' fill='%237a7266' font-family='sans-serif' font-weight='bold'>?</text></svg>" />
+            <span class="name">Future Employee</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div>
+    <div class="room-title">Premium Platform</div>
+    <div class="room">
+      <div class="door"></div>
+      <div class="window w1"></div>
+      <div class="window w3"></div>
+
+      <div class="row-label">Row 1 — 4 tables</div>
+      <div class="row r-4">
+        <div class="table empty"></div>
+        <div class="table empty"></div>
+        <div class="table empty"></div>
+        <div class="table empty"></div>
+      </div>
+
+      <div class="row-label">Row 2 — 2 tables</div>
+      <div class="row r-2">
+        <div class="table empty"></div>
+        <div class="table empty"></div>
+      </div>
+
+      <div class="row-label">Row 3 — 3 tables</div>
+      <div class="row r-3">
+        <div class="table empty"></div>
+        <div class="table empty"></div>
+        <div class="table empty"></div>
+      </div>
+
+      <div class="row-label">Row 4 — 3 tables</div>
+      <div class="row r-3">
+        <div class="table empty"></div>
+        <div class="table empty"></div>
+        <div class="table empty"></div>
+      </div>
+    </div>
+    </div>
+    </div>
+
+    <footer>
+      <div>PPP room: 11 tables · Billing team: 14 tables · Premium Platform: 12 tables · 20 seated · 17 empty · drag across rooms to swap</div>
+      <div>Tip: open in Chrome → screenshot with ⌘⇧4 → paste into Figma frame.</div>
+    </footer>
+  </div>
+<script>
+(() => {
+  let dragged = null;
+
+  const getTable = (el) => el.closest('.table');
+
+  document.querySelectorAll('.seat').forEach(seat => {
+    seat.addEventListener('dragstart', (e) => {
+      dragged = seat;
+      seat.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', seat.querySelector('.name')?.textContent || ''); } catch (_) {}
+    });
+    seat.addEventListener('dragend', () => {
+      seat.classList.remove('dragging');
+      document.querySelectorAll('.table.drop-target').forEach(t => t.classList.remove('drop-target'));
+      dragged = null;
+    });
+  });
+
+  document.querySelectorAll('.table').forEach(table => {
+    table.addEventListener('dragover', (e) => {
+      if (!dragged) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      table.classList.add('drop-target');
+    });
+    table.addEventListener('dragleave', (e) => {
+      if (e.target === table) table.classList.remove('drop-target');
+    });
+    table.addEventListener('drop', (e) => {
+      e.preventDefault();
+      table.classList.remove('drop-target');
+      if (!dragged) return;
+
+      const sourceTable = getTable(dragged);
+      const targetTable = table;
+      if (sourceTable === targetTable) return;
+
+      const targetSeat = targetTable.querySelector('.seat');
+
+      targetTable.appendChild(dragged);
+      targetTable.classList.remove('empty');
+
+      if (targetSeat) {
+        sourceTable.appendChild(targetSeat);
+        sourceTable.classList.remove('empty');
+      } else {
+        sourceTable.classList.add('empty');
+      }
+    });
+  });
+
+  document.getElementById('reshuffle')?.addEventListener('click', () => {
+    const tables = Array.from(document.querySelectorAll('.table'));
+    const seats = tables.map(t => t.querySelector('.seat')).filter(Boolean);
+    for (let i = seats.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [seats[i], seats[j]] = [seats[j], seats[i]];
+    }
+    const tableOrder = [...tables];
+    for (let i = tableOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [tableOrder[i], tableOrder[j]] = [tableOrder[j], tableOrder[i]];
+    }
+    tables.forEach(t => {
+      const s = t.querySelector('.seat');
+      if (s) s.remove();
+      t.classList.add('empty');
+    });
+    tableOrder.slice(0, seats.length).forEach((t, idx) => {
+      t.appendChild(seats[idx]);
+      t.classList.remove('empty');
+    });
+  });
+})();
+</script>
+</body>
+</html>
