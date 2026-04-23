@@ -318,25 +318,38 @@
   }
   .col .table.empty::after { font-size: 9px; }
 
-  .top-wall-label {
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 10px;
-    background: #cfe7ff;
-    border-left: 2px solid var(--wall);
-    border-right: 2px solid var(--wall);
+  /* Holding / parking area — temporary spots for rearranging */
+  .holding-area {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 170px;
   }
-  .top-wall-label::after {
-    content: "windows";
-    position: absolute;
-    top: -18px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px; color: var(--muted); letter-spacing: 4px;
-    text-transform: uppercase; font-weight: 600;
+  .holding-area .room-title { text-align: center; }
+  .holding {
+    background:
+      repeating-linear-gradient(
+        45deg,
+        #f2ede0 0 10px,
+        #ece6d6 10px 20px
+      );
+    border: 2px dashed #b7afa0;
+    border-radius: 12px;
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
   }
+  .holding .table {
+    width: 124px;
+    height: 108px;
+    border-radius: 10px;
+  }
+  .holding .seat { gap: 4px; }
+  .holding .seat img { width: 60px; height: 60px; border-width: 3px; }
+  .holding .seat .name { font-size: 10px; padding: 1px 7px; }
+  .holding .table.empty::after { font-size: 9px; content: "free"; }
 </style>
 </head>
 <body>
@@ -344,7 +357,7 @@
     <header>
       <div>
         <h1>Team Room Arrangement</h1>
-        <div class="subtitle">3 rooms · 41 tables · 41 teammates (7 placeholders) · layout per shared sheet</div>
+        <div class="subtitle">3 rooms · 41 seats + 3 free spots · 41 teammates (3 placeholders) · layout per shared sheet</div>
       </div>
       <div class="legend">
         <span class="chip"><span class="dot"></span>Premium Billing</span>
@@ -357,7 +370,7 @@
     <div>
     <div class="room-title">PPP room · 12 tables</div>
     <div class="room">
-      <div class="top-wall-label"></div>
+      <div class="right-wall-window"></div>
       <div class="door bottom-left"></div>
 
       <div class="clusters">
@@ -377,8 +390,8 @@
             </div>
             <div class="table">
               <div class="seat" draggable="true">
-                <img alt="Yael Levi" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23dfd8c7' width='100' height='100'/><text x='50' y='72' font-size='70' text-anchor='middle' fill='%237a7266' font-family='sans-serif' font-weight='bold'>?</text></svg>" />
-                <span class="name">Yael Levi</span>
+                <img alt="Yael Levy" src="https://avatars.slack-edge.com/2025-03-10/8569973619254_9cc0e3cf4f099b478c8f_512.jpg" />
+                <span class="name">Yael Levy</span>
               </div>
             </div>
           </div>
@@ -558,7 +571,7 @@
     <div>
     <div class="room-title">Premium Platform · 16 tables</div>
     <div class="room">
-      <div class="top-wall-label"></div>
+      <div class="right-wall-window"></div>
       <div class="door bottom-left"></div>
 
       <div class="clusters">
@@ -583,14 +596,14 @@
           <div class="col">
             <div class="table">
               <div class="seat" draggable="true">
-                <img alt="Roy" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23dfd8c7' width='100' height='100'/><text x='50' y='72' font-size='70' text-anchor='middle' fill='%237a7266' font-family='sans-serif' font-weight='bold'>?</text></svg>" />
-                <span class="name">Roy</span>
+                <img alt="Roy Shlain" src="https://avatars.slack-edge.com/2025-08-18/9365717580357_2b653b2603c587122e85_512.png" />
+                <span class="name">Roy Shlain</span>
               </div>
             </div>
             <div class="table">
               <div class="seat" draggable="true">
-                <img alt="Dafna" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23dfd8c7' width='100' height='100'/><text x='50' y='72' font-size='70' text-anchor='middle' fill='%237a7266' font-family='sans-serif' font-weight='bold'>?</text></svg>" />
-                <span class="name">Dafna</span>
+                <img alt="Dafna Piotro" src="https://avatars.slack-edge.com/2020-01-06/883402025571_9e2d66af69aa5ade5456_512.png" />
+                <span class="name">Dafna Piotro</span>
               </div>
             </div>
           </div>
@@ -620,8 +633,8 @@
             </div>
             <div class="table">
               <div class="seat" draggable="true">
-                <img alt="Noy" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23dfd8c7' width='100' height='100'/><text x='50' y='72' font-size='70' text-anchor='middle' fill='%237a7266' font-family='sans-serif' font-weight='bold'>?</text></svg>" />
-                <span class="name">Noy</span>
+                <img alt="Noy Katzman" src="https://avatars.slack-edge.com/2021-08-23/2401823568262_a31a9c6a565abcb50b0d_512.jpg" />
+                <span class="name">Noy Katzman</span>
               </div>
             </div>
             <div class="table">
@@ -686,10 +699,19 @@
       </div>
     </div>
     </div>
+
+    <div class="holding-area">
+    <div class="room-title">Free spots</div>
+    <div class="holding" aria-label="Temporary holding area">
+      <div class="table empty"></div>
+      <div class="table empty"></div>
+      <div class="table empty"></div>
+    </div>
+    </div>
     </div>
 
     <footer>
-      <div>PPP room: 12 tables · Billing team: 13 tables · Premium Platform: 16 tables · 41 seated · drag across rooms to swap</div>
+      <div>PPP: 12 · Billing: 13 · Premium Platform: 16 · Free spots: 3 · drag across rooms to swap · drop into free spots while arranging</div>
       <div>Tip: open in Chrome → screenshot with ⌘⇧4 → paste into Figma frame.</div>
     </footer>
   </div>
