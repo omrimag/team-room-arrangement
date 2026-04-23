@@ -357,12 +357,13 @@
     <header>
       <div>
         <h1>Team Room Arrangement</h1>
-        <div class="subtitle">3 rooms · 41 seats + 3 free spots · 41 teammates (3 placeholders) · layout per shared sheet</div>
+        <div class="subtitle">3 rooms · 41 seats + 3 free spots · 41 teammates (3 placeholders) · drag to swap · arrangement saved on this device</div>
       </div>
       <div class="legend">
         <span class="chip"><span class="dot"></span>Premium Billing</span>
         <span class="chip">Drag any face onto another table to swap</span>
         <button id="reshuffle" class="chip" style="border:0; cursor:pointer;">↻ Reshuffle</button>
+        <button id="reset-layout" class="chip" style="border:0; cursor:pointer;" title="Clear saved layout and restore defaults">⟲ Reset to default</button>
       </div>
     </header>
 
@@ -717,16 +718,72 @@
   </div>
 <script>
 (() => {
+  const STORAGE_KEY = 'team-room-arrangement:v2';
   let dragged = null;
 
+  const allTables = () => Array.from(document.querySelectorAll('.table'));
   const getTable = (el) => el.closest('.table');
+  const seatName = (seat) => seat?.querySelector('.name')?.textContent?.trim() || '';
+
+  allTables().forEach((t, i) => { t.dataset.tid = String(i); });
+
+  const saveState = () => {
+    const map = {};
+    allTables().forEach(t => {
+      const s = t.querySelector('.seat');
+      if (s) map[t.dataset.tid] = seatName(s);
+    });
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); } catch (_) {}
+  };
+
+  const restoreState = () => {
+    let raw; try { raw = localStorage.getItem(STORAGE_KEY); } catch (_) { return; }
+    if (!raw) return;
+    let map; try { map = JSON.parse(raw); } catch (_) { return; }
+    if (!map || typeof map !== 'object') return;
+
+    const tables = allTables();
+    const tableById = new Map(tables.map(t => [t.dataset.tid, t]));
+
+    const seatsByName = new Map();
+    tables.forEach(t => {
+      const s = t.querySelector('.seat');
+      if (s) seatsByName.set(seatName(s), s);
+    });
+
+    const savedNames = new Set(Object.values(map));
+    const currentNames = new Set(seatsByName.keys());
+    for (const n of savedNames) {
+      if (!currentNames.has(n)) return;
+    }
+    for (const n of currentNames) {
+      if (!savedNames.has(n)) return;
+    }
+
+    tables.forEach(t => {
+      const s = t.querySelector('.seat');
+      if (s) s.remove();
+      t.classList.add('empty');
+    });
+
+    Object.entries(map).forEach(([tid, name]) => {
+      const table = tableById.get(tid);
+      const seat = seatsByName.get(name);
+      if (table && seat) {
+        table.appendChild(seat);
+        table.classList.remove('empty');
+      }
+    });
+  };
+
+  restoreState();
 
   document.querySelectorAll('.seat').forEach(seat => {
     seat.addEventListener('dragstart', (e) => {
       dragged = seat;
       seat.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
-      try { e.dataTransfer.setData('text/plain', seat.querySelector('.name')?.textContent || ''); } catch (_) {}
+      try { e.dataTransfer.setData('text/plain', seatName(seat)); } catch (_) {}
     });
     seat.addEventListener('dragend', () => {
       seat.classList.remove('dragging');
@@ -765,11 +822,13 @@
       } else {
         sourceTable.classList.add('empty');
       }
+
+      saveState();
     });
   });
 
   document.getElementById('reshuffle')?.addEventListener('click', () => {
-    const tables = Array.from(document.querySelectorAll('.table'));
+    const tables = allTables();
     const seats = tables.map(t => t.querySelector('.seat')).filter(Boolean);
     for (let i = seats.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -789,6 +848,12 @@
       t.appendChild(seats[idx]);
       t.classList.remove('empty');
     });
+    saveState();
+  });
+
+  document.getElementById('reset-layout')?.addEventListener('click', () => {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+    location.reload();
   });
 })();
 </script>
