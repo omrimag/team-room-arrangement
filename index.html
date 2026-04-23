@@ -192,6 +192,30 @@
     white-space: nowrap;
   }
 
+  .top-wall-window {
+    position: absolute;
+    top: -8px;
+    left: 48px;
+    right: 48px;
+    height: 10px;
+    background: #cfe7ff;
+    border-left: 2px solid var(--wall);
+    border-right: 2px solid var(--wall);
+  }
+  .top-wall-window::before {
+    content: "window";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
   .row-label {
     text-align: center;
     font-size: 11px;
@@ -403,7 +427,7 @@
     <div>
     <div class="room-title">PPP room · 12 tables</div>
     <div class="room">
-      <div class="right-wall-window"></div>
+      <div class="top-wall-window"></div>
       <div class="door bottom-left"></div>
 
       <div class="clusters">
@@ -440,8 +464,8 @@
             </div>
             <div class="table">
               <div class="seat" draggable="true">
-                <img alt="Sivan Waxman" src="https://avatars.slack-edge.com/2021-07-29/2310811282871_32f90cb93e5f330098cc_512.jpg" />
-                <span class="name">Sivan Waxman</span>
+                <img alt="Shalev Yermiyahu" src="https://avatars.slack-edge.com/2025-08-27/9443597360928_eed2c0eabab3f14628d9_512.jpg" />
+                <span class="name">Shalev Yermiyahu</span>
               </div>
             </div>
           </div>
@@ -565,8 +589,8 @@
             </div>
             <div class="table">
               <div class="seat" draggable="true">
-                <img alt="Shalev Yermiyahu" src="https://avatars.slack-edge.com/2025-08-27/9443597360928_eed2c0eabab3f14628d9_512.jpg" />
-                <span class="name">Shalev Yermiyahu</span>
+                <img alt="Sivan Waxman" src="https://avatars.slack-edge.com/2021-07-29/2310811282871_32f90cb93e5f330098cc_512.jpg" />
+                <span class="name">Sivan Waxman</span>
               </div>
             </div>
             <div class="table">
@@ -607,7 +631,7 @@
     <div>
     <div class="room-title">Premium Platform · 16 tables</div>
     <div class="room">
-      <div class="right-wall-window"></div>
+      <div class="top-wall-window"></div>
       <div class="door bottom-left"></div>
 
       <div class="clusters">
@@ -753,7 +777,7 @@
   </div>
 <script>
 (() => {
-  const STORAGE_KEY = 'team-room-arrangement:v3';
+  const STORAGE_KEY = 'team-room-arrangement:v4';
   let dragged = null;
 
   const allTables = () => Array.from(document.querySelectorAll('.table'));
